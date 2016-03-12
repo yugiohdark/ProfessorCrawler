@@ -2,7 +2,7 @@ import scrapy
 from tutorial.items import ProfessorItem
 
 
-class UIUCSpider(scrapy.Spider):
+class UTEXASSpider(scrapy.Spider):
     name = "utexas"
     start_urls = [
         "https://www.cs.utexas.edu/faculty",
