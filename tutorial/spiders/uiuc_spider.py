@@ -25,5 +25,26 @@ class UIUCSpider(scrapy.Spider):
         for sel in self.driver.find_elements_by_css_selector('#quicktabs_tabpage_faculty_tabs_new_0 .extDirectoryPerson'):
             item = ProfessorItem()
             item['name'] = sel.find_element_by_css_selector('.extDirectoryName a').text
+            item['img'] = sel.find_element_by_css_selector('.extDirectoryPhoto a img').get_attribute('src')
+            url = response.urljoin(sel.find_element_by_css_selector('.extDirectoryPhoto a').get_attribute('href'))
+            item['url'] = url
+            item['title'] = sel.find_element_by_css_selector('.extDirectoryTitle').text
+            item['addr'] = sel.find_element_by_css_selector('.extDirectoryOffice').text
+            item['phone'] = sel.find_element_by_css_selector('.extDirectoryPhone').text
+            item['email'] = sel.find_element_by_css_selector('.extDirectoryEmail a').text
+            #Go to homepage and parse the area
+            request = scrapy.Request(url, callback=self.parse_prof_homepage)
+            request.meta['item'] = item
+            yield request
             yield item
         self.driver.close()
+
+    def parse_prof_homepage(self, response):
+        item = response.meta['item']
+        self.driver.get(response.url)
+        areaStr = u''
+        for areaLi in sel.find_element_by_css_selector('.extProfileAffiliationsPrimaryArea li'):
+            areaStr = areaStr.join(areaLi.text)
+        item['area'] = areaStr
+        self.driver.close()
+        return item
