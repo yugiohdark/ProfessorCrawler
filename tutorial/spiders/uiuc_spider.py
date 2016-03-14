@@ -6,15 +6,17 @@ import time
 class UIUCSpider(scrapy.Spider):
     name = "uiuc"
     start_urls = [
-        "https://cs.illinois.edu/directory/faculty?quicktabs_faculty_tabs_new=0#quicktabs-faculty_tabs_new",
+        "http://cs.illinois.edu/directory/faculty?quicktabs_faculty_tabs_new=0#quicktabs-faculty_tabs_new",
     ]
 
     def __init__(self):
         scrapy.Spider.__init__(self)
         # use any browser you wish
         self.driver = webdriver.Firefox() 
+        self.driver2 = webdriver.Firefox()
     def __del__(self):
         self.driver.close()
+        self.driver2.close()
 
     def parse(self, response):
         #start browser
@@ -41,10 +43,10 @@ class UIUCSpider(scrapy.Spider):
 
     def parse_prof_homepage(self, response):
         item = response.meta['item']
-        self.driver.get(response.url)
+        self.driver2.get(response.url)
         areaStr = u''
-        for areaLi in sel.find_element_by_css_selector('.extProfileAffiliationsPrimaryArea li'):
+        for areaLi in self.driver2.find_elements_by_css_selector('.extProfileAffiliationsPrimaryArea li'):
             areaStr = areaStr.join(areaLi.text)
         item['area'] = areaStr
-        self.driver.close()
+        self.driver2.close()
         return item
