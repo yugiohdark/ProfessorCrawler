@@ -22,7 +22,7 @@ class UIUCSpider(scrapy.Spider):
         #start browser
         self.driver.get(response.url)
         #loading time interval
-        time.sleep(5)
+        time.sleep(1)
         # get the data and write it to scrapy items
         for sel in self.driver.find_elements_by_css_selector('#quicktabs_tabpage_faculty_tabs_new_0 .extDirectoryPerson'):
             item = ProfessorItem()
@@ -39,14 +39,15 @@ class UIUCSpider(scrapy.Spider):
             request.meta['item'] = item
             yield request
             yield item
-        self.driver.close()
+        #self.driver.close()
+        #self.driver2.close()
 
     def parse_prof_homepage(self, response):
         item = response.meta['item']
         self.driver2.get(response.url)
+        time.sleep(1)
         areaStr = u''
         for areaLi in self.driver2.find_elements_by_css_selector('.extProfileAffiliationsPrimaryArea li'):
             areaStr = areaStr.join(areaLi.text)
         item['area'] = areaStr
-        self.driver2.close()
         return item
